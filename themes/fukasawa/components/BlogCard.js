@@ -51,6 +51,7 @@ const BlogCard = ({ showAnimate, post, showSummary, priority = false }) => {
             <div className='flex-grow mb-3 w-full duration-200 cursor-pointer transform overflow-hidden'>
               <LazyImage
                 src={pageCoverThumbnail}
+                fallbackSrc='/bg_image.jpg'
                 priority={priority}
                 width={720}
                 height={480}

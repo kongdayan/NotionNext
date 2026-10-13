@@ -1,5 +1,4 @@
 const fs = require('node:fs')
-const os = require('node:os')
 const path = require('node:path')
 const { spawnSync } = require('node:child_process')
 
@@ -11,7 +10,9 @@ if (process.env.VERCEL !== '1') {
 }
 
 const root = path.resolve(__dirname, '..')
-const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'notionnext-install-'))
+const buildDirectory = path.join(root, '.vercel')
+fs.mkdirSync(buildDirectory, { recursive: true })
+const temporary = fs.mkdtempSync(path.join(buildDirectory, 'dependencies-'))
 const manifest = JSON.parse(
   fs.readFileSync(path.join(root, 'package.json'), 'utf8')
 )
@@ -48,9 +49,17 @@ if (result.error || result.status !== 0) {
 
 const modules = path.join(root, 'node_modules')
 const previous = path.join(temporary, 'previous-node_modules')
-if (fs.existsSync(modules)) fs.renameSync(modules, previous)
-fs.renameSync(path.join(temporary, 'node_modules'), modules)
-fs.rmSync(temporary, { recursive: true, force: true })
+try {
+  if (fs.existsSync(modules)) fs.renameSync(modules, previous)
+  fs.renameSync(path.join(temporary, 'node_modules'), modules)
+} catch (error) {
+  if (!fs.existsSync(modules) && fs.existsSync(previous)) {
+    fs.renameSync(previous, modules)
+  }
+  throw error
+} finally {
+  fs.rmSync(temporary, { recursive: true, force: true })
+}
 console.log(
   '[install] Blog dependencies ready; repository manifest and lockfile preserved'
 )

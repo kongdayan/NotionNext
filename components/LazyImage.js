@@ -23,7 +23,7 @@ const getTargetImageWidth = (width, maxWidth) => {
 export default function LazyImage({
   priority,
   id,
-  src,
+  src: sourceSrc,
   alt,
   fallbackSrc,
   placeholderSrc,
@@ -36,6 +36,7 @@ export default function LazyImage({
   style,
   loading
 }) {
+  const src = replaceRetiredUnsplashSource(sourceSrc, fallbackSrc)
   const maxWidth = siteConfig('IMAGE_COMPRESS_WIDTH')
   const targetImageWidth = getTargetImageWidth(width, maxWidth)
   const defaultPlaceholderSrc = siteConfig('IMG_LAZY_LOAD_PLACEHOLDER')
@@ -207,6 +208,23 @@ export default function LazyImage({
       )}
     </>
   )
+}
+
+function replaceRetiredUnsplashSource(src, fallbackSrc) {
+  try {
+    const url = new URL(src)
+    const image =
+      ['www.notion.so', 'notion.so'].includes(url.hostname) &&
+      url.pathname.startsWith('/image/')
+        ? new URL(decodeURIComponent(url.pathname.slice(7)))
+        : url
+    if (image.hostname === 'source.unsplash.com') {
+      return fallbackSrc || '/bg_image.jpg'
+    }
+  } catch {
+    // Relative paths and active image providers keep their original source.
+  }
+  return src
 }
 
 /**

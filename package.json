@@ -139,8 +139,6 @@
   },
   "resolutions": {
     "**/sucrase/glob": "^10.5.0",
-    "**/sucrase/glob/minimatch": "^9.0.9",
-    "**/sucrase/glob/minimatch/brace-expansion": "^2.1.7",
     "**/webpack-bundle-analyzer/ws": "^8.21.0",
     "@clerk/clerk-react": "^5.61.6",
     "axios": ">=0.21.1",

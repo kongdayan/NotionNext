@@ -94,6 +94,14 @@ Analytics 源码的 [CI 38355909713](https://github.com/kongdayan/NotionNext/act
 
 Docker 镜像发布原来在 push 时自动构建 amd64/arm64，更新代码曾触发该流程并发布到 `ghcr.io/kongdayan/notionnext:main`。Vercel 博客部署不依赖这份容器镜像。用户随后明确要求删除无用镜像，本次已删除 GHCR 的整个 `notionnext` 容器包（含历史版本），GitHub Packages 页面已为空；同时在 GitHub 停用工作流，并从仓库删除 `.github/workflows/docker-ghcr.yaml`，避免后续更新再次构建或推送镜像。网站、Analytics 和 Speed Insights 继续使用此前已验证的 Vercel 生产部署。
 
+## 追加上游同步与提交历史
+
+用户随后要求同步 GitHub 显示落后的 37 个提交。本次 fetch 到上游 `84c3b0cc`，追加合并这些更新，包含 Notion OAuth 凭据保留在服务器端的修复、HEO 评论和目录控件修复，以及依赖和 CodeQL 更新。处理清单和锁文件冲突时，保留 Analytics 2.0.1、Speed Insights 2.0.0、已有性能修复、Vercel 精简安装及 Docker 发布流程删除；保留已经更高的兼容修复版本，依赖下载地址继续统一为官方 npm registry。
+
+追加同步后的本地 70 个测试套件、382 项测试通过，类型检查、lint、VitePress 构建和 frozen lockfile 安装通过。前述性能对照记录来自追加同步前的明确部署版本，不能直接作为新依赖版本的重新测量结果。
+
+fetch 时 fork 的 78 个额外提交中，55 个为合并记录、23 个为普通提交。这个计数反映 Git 历史，不会增加页面资源或让网站变慢。本次常规合并保留历史；若要把 GitHub 的 fork 差异压成 1 个提交，可在最新上游之上创建代码完全相同的单个定制提交，但替换远程 `main` 需要改写历史，应先保留备份并取得明确授权。
+
 ## 后续维护
 
 全量依赖扫描仍有开发工具和可选组件的告警，例如 Lighthouse 工具链、Jest、ESLint、VitePress、Waline；本次结果按依赖路径计数为 153 high、88 moderate、1 low、0 critical。兼容补丁已优先应用，但部分告警需要工具链升级或上游发布修复，不宜为清零数字强行跨主版本替换。Vercel 构建不再安装文档和测试工具，保留的开发清单仍应持续维护。

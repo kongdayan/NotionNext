@@ -1,7 +1,7 @@
 {
   "cleanUrls": false,
   "trailingSlash": false,
-  "installCommand": "npx --yes yarn@1.22.22 install --frozen-lockfile --production=true --non-interactive --network-timeout 60000 --registry https://registry.npmjs.org --verbose",
+  "installCommand": "node scripts/install-vercel.js",
   "ignoreCommand": "case \"$VERCEL_GIT_COMMIT_MESSAGE\" in *\"[skip-version]\"*) exit 0;; *) exit 1;; esac",
   "headers": []
 }

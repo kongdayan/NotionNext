@@ -141,6 +141,7 @@
     "**/webpack-bundle-analyzer/ws": "^8.21.0",
     "@clerk/clerk-react": "^5.61.6",
     "axios": ">=0.21.1",
+    "compression": "^1.8.2",
     "esbuild": "^0.25.0",
     "flatted": "^3.4.2",
     "form-data": "^4.0.4",
@@ -148,9 +149,11 @@
     "lodash": "^4.18.1",
     "picomatch": "^2.3.2",
     "postcss": "^8.5.30",
+    "proxy-addr": "^2.0.8",
     "qs": "^6.15.2",
     "sharp": "^0.35.5",
-    "tmp": "^0.2.6",
+    "source-map-js": "^1.2.2",
+    "tmp": "^0.2.7",
     "uuid": "^11.1.1"
   },
   "bugs": {

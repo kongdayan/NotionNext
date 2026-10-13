@@ -16,12 +16,17 @@ const BlogCard = ({ showAnimate, post, showSummary, priority = false }) => {
   const showPreview =
     siteConfig('FUKASAWA_POST_LIST_PREVIEW', null, CONFIG) && post.blockMap
   // fukasawa 强制显示图片
-  const pageCoverThumbnail =
+  const coverUrl =
     siteConfig('FUKASAWA_POST_LIST_COVER_FORCE', null, CONFIG) &&
     post &&
     !post.pageCover
       ? siteInfo?.pageCover
       : post?.pageCoverThumbnail
+  // The retired random-image endpoint cannot serve these legacy covers.
+  // Use the local fallback immediately rather than wait for its failed proxy.
+  const pageCoverThumbnail = isRetiredUnsplashSource(coverUrl)
+    ? '/bg_image.jpg'
+    : coverUrl
   const showPageCover =
     siteConfig('FUKASAWA_POST_LIST_COVER', null, CONFIG) && pageCoverThumbnail
 
@@ -110,3 +115,17 @@ const BlogCard = ({ showAnimate, post, showSummary, priority = false }) => {
 }
 
 export default BlogCard
+
+function isRetiredUnsplashSource(src) {
+  try {
+    const url = new URL(src)
+    const image =
+      ['www.notion.so', 'notion.so'].includes(url.hostname) &&
+      url.pathname.startsWith('/image/')
+        ? new URL(decodeURIComponent(url.pathname.slice(7)))
+        : url
+    return image.hostname === 'source.unsplash.com'
+  } catch {
+    return false
+  }
+}

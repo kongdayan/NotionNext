@@ -28,7 +28,7 @@ export default function ArticleDetail(props) {
     <div
       id='container'
       className={`${fullWidth ? 'px-10' : 'max-w-5xl '} overflow-x-auto flex-grow mx-auto w-screen md:w-full`}>
-      {post?.type && !post?.type !== 'Page' && post?.pageCover && (
+      {post?.type && post.type !== 'Page' && post?.pageCover && (
         <div className='w-full relative md:flex-shrink-0 overflow-hidden'>
           <LazyImage
             alt={post.title}
@@ -41,12 +41,12 @@ export default function ArticleDetail(props) {
       <article className='subpixel-antialiased overflow-y-hidden py-10 px-5 lg:pt-24 md:px-32  dark:border-gray-700 bg-white dark:bg-hexo-black-gray'>
         <header>
           {/* 文章Title */}
-          <div className='font-bold text-4xl text-black dark:text-white'>
+          <h1 className='font-bold text-4xl text-black dark:text-white'>
             {siteConfig('POST_TITLE_ICON') && (
               <NotionIcon icon={post?.pageIcon} />
             )}
             {post.title}
-          </div>
+          </h1>
 
           <section className='flex-wrap flex mt-2 text-gray-400 dark:text-gray-400 font-light leading-8'>
             <div>

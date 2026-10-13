@@ -1,6 +1,7 @@
 {
   "cleanUrls": false,
   "trailingSlash": false,
+  "installCommand": "npx --yes yarn@1.22.22 install --frozen-lockfile --non-interactive --registry https://registry.npmjs.org",
   "ignoreCommand": "case \"$VERCEL_GIT_COMMIT_MESSAGE\" in *\"[skip-version]\"*) exit 0;; *) exit 1;; esac",
   "headers": []
 }

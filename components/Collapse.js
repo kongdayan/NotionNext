@@ -14,6 +14,7 @@ const Collapse = ({
   collapseRef
 }) => {
   const ref = useRef(null)
+  const wasOpen = useRef(false)
 
   useImperativeHandle(collapseRef, () => {
     return {
@@ -83,9 +84,12 @@ const Collapse = ({
   useEffect(() => {
     if (isOpen) {
       expandSection(ref.current)
-    } else {
+    } else if (wasOpen.current) {
       collapseSection(ref.current)
     }
+    // An initially closed menu already has zero height. Expanding it for one
+    // animation frame before closing causes the mobile header to jump.
+    wasOpen.current = isOpen
     // 通知父组件高度变化
     onHeightChange &&
       onHeightChange({

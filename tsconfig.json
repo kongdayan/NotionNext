@@ -47,5 +47,5 @@
     "**/*.jsx",
     ".eslintrc.js"
   ],
-  "exclude": ["node_modules", "public", ".vitepress"]
+  "exclude": ["node_modules", "public", ".vitepress", "functions"]
 }

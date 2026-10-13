@@ -42,7 +42,7 @@ export default function LazyImage({
   const imageRef = useRef(null)
   const [currentSrc, setCurrentSrc] = useState(
     priority && src
-      ? adjustImgSize(src, targetImageWidth)
+      ? adjustImgSize(src, targetImageWidth, false)
       : placeholderSrc || defaultPlaceholderSrc
   )
   const [imageLoaded, setImageLoaded] = useState(Boolean(priority && src))
@@ -73,7 +73,7 @@ export default function LazyImage({
 
   useEffect(() => {
     const adjustedImageSrc =
-      adjustImgSize(src, targetImageWidth) || defaultPlaceholderSrc
+      adjustImgSize(src, targetImageWidth, !priority) || defaultPlaceholderSrc
     const imageElement = imageRef.current
     const handleImageLoaded = () => {
       if (typeof onLoad === 'function') {
@@ -200,7 +200,7 @@ export default function LazyImage({
           <link
             rel='preload'
             as='image'
-            href={adjustImgSize(src, targetImageWidth)}
+            href={adjustImgSize(src, targetImageWidth, false)}
             fetchpriority='high'
           />
         </Head>
@@ -215,12 +215,15 @@ export default function LazyImage({
  * @param {*} maxWidth
  * @returns
  */
-const adjustImgSize = (src, maxWidth) => {
+const adjustImgSize = (src, maxWidth, useScreenWidth = true) => {
   if (!src) {
     return null
   }
   const screenWidth =
-    (typeof window !== 'undefined' && window?.screen?.width) || maxWidth
+    (useScreenWidth &&
+      typeof window !== 'undefined' &&
+      window?.screen?.width) ||
+    maxWidth
   const parsedMaxWidth = Number(maxWidth)
   const targetWidth =
     Number.isFinite(parsedMaxWidth) && parsedMaxWidth > 0

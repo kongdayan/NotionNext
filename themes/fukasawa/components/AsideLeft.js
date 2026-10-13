@@ -53,22 +53,27 @@ function AsideLeft(props) {
   )
 
   // 侧边栏折叠从 本地存储中获取 open 状态的初始值
-  const [isCollapsed, setIsCollapse] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return (
-        localStorage.getItem('fukasawa-sidebar-collapse') === 'true' ||
-        FUKASAWA_SIDEBAR_COLLAPSE_SATUS_DEFAULT
-      )
+  const [isCollapsed, setIsCollapse] = useState(
+    FUKASAWA_SIDEBAR_COLLAPSE_SATUS_DEFAULT
+  )
+  const [storageReady, setStorageReady] = useState(false)
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('fukasawa-sidebar-collapse')
+      if (saved !== null) setIsCollapse(saved === 'true')
+    } catch {
+      // Keep the default when browser storage is unavailable.
+    } finally {
+      setStorageReady(true)
     }
-    return FUKASAWA_SIDEBAR_COLLAPSE_SATUS_DEFAULT
-  })
+  }, [])
 
   // 在组件卸载时保存 open 状态到本地存储中
   useEffect(() => {
-    if (isBrowser) {
+    if (isBrowser && storageReady) {
       localStorage.setItem('fukasawa-sidebar-collapse', isCollapsed)
     }
-  }, [isCollapsed])
+  }, [isCollapsed, storageReady])
 
   const isReverse = siteConfig('LAYOUT_SIDEBAR_REVERSE')
   const position = useMemo(() => {
@@ -120,12 +125,14 @@ function AsideLeft(props) {
 
   return (
     <div
-      className={`sideLeft relative ${isCollapsed ? 'w-0' : 'w-80'} duration-300 transition-all bg-white dark:bg-hexo-black-gray min-h-screen hidden lg:block z-20`}>
+      className={`sideLeft relative ${isCollapsed ? 'w-0' : 'w-80'} duration-300 transition-all bg-white dark:bg-hexo-black-gray min-h-screen hidden lg:block z-20`}
+    >
       {/* 悬浮的折叠按钮 */}
       {FUKASAWA_SIDEBAR_COLLAPSE_BUTTON && (
         <div
           className={`${position} hidden lg:block fixed top-0 cursor-pointer hover:scale-110 duration-300 px-3 py-2 dark:text-white`}
-          onClick={toggleOpen}>
+          onClick={toggleOpen}
+        >
           {isCollapsed ? (
             <i className='fa-solid fa-indent text-xl'></i>
           ) : (

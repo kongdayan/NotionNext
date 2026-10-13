@@ -11,27 +11,22 @@ import TagItemMini from './TagItemMini'
  * @param {*} param0
  * @returns
  */
-const BlogCard = ({ showAnimate, post, showSummary }) => {
-const {siteInfo} =useGlobal()
+const BlogCard = ({ showAnimate, post, showSummary, priority = false }) => {
+  const { siteInfo } = useGlobal()
   const showPreview =
     siteConfig('FUKASAWA_POST_LIST_PREVIEW', null, CONFIG) && post.blockMap
   // fukasawa 强制显示图片
-  if (
+  const pageCoverThumbnail =
     siteConfig('FUKASAWA_POST_LIST_COVER_FORCE', null, CONFIG) &&
     post &&
     !post.pageCover
-  ) {
-    post.pageCoverThumbnail = siteInfo?.pageCover
-  }
+      ? siteInfo?.pageCover
+      : post?.pageCoverThumbnail
   const showPageCover =
-    siteConfig('FUKASAWA_POST_LIST_COVER', null, CONFIG) &&
-    post?.pageCoverThumbnail
-    
-  const FUKASAWA_POST_LIST_ANIMATION = siteConfig(
-    'FUKASAWA_POST_LIST_ANIMATION',
-    null,
-    CONFIG
-  ) || showAnimate 
+    siteConfig('FUKASAWA_POST_LIST_COVER', null, CONFIG) && pageCoverThumbnail
+
+  const FUKASAWA_POST_LIST_ANIMATION =
+    siteConfig('FUKASAWA_POST_LIST_ANIMATION', null, CONFIG) || showAnimate
 
   // 动画样式  首屏卡片不用，后面翻出来的加动画
   const aosProps = FUKASAWA_POST_LIST_ANIMATION
@@ -47,14 +42,18 @@ const {siteInfo} =useGlobal()
     <article
       {...aosProps}
       style={{ maxHeight: '60rem' }}
-      className='w-full lg:max-w-sm p-3 shadow mb-4 mx-2 bg-white dark:bg-hexo-black-gray hover:shadow-lg duration-200'>
+      className='w-full lg:max-w-sm p-3 shadow mb-4 mx-2 bg-white dark:bg-hexo-black-gray hover:shadow-lg duration-200'
+    >
       <div className='flex flex-col justify-between h-full'>
         {/* 封面图 */}
         {showPageCover && (
           <SmartLink href={post?.href} passHref legacyBehavior>
             <div className='flex-grow mb-3 w-full duration-200 cursor-pointer transform overflow-hidden'>
               <LazyImage
-                src={post?.pageCoverThumbnail}
+                src={pageCoverThumbnail}
+                priority={priority}
+                width={720}
+                height={480}
                 alt={post?.title || siteConfig('TITLE')}
                 className='object-cover w-full h-full hover:scale-125 transform duration-500'
               />
@@ -68,7 +67,8 @@ const {siteInfo} =useGlobal()
             <SmartLink
               passHref
               href={post?.href}
-              className={`break-words cursor-pointer font-bold hover:underline text-xl ${showPreview ? 'justify-center' : 'justify-start'} leading-tight text-gray-700 dark:text-gray-100 hover:text-blue-500 dark:hover:text-blue-400`}>
+              className={`break-words cursor-pointer font-bold hover:underline text-xl ${showPreview ? 'justify-center' : 'justify-start'} leading-tight text-gray-700 dark:text-gray-100 hover:text-blue-500 dark:hover:text-blue-400`}
+            >
               {siteConfig('POST_TITLE_ICON') && (
                 <NotionIcon icon={post.pageIcon} />
               )}{' '}
@@ -88,7 +88,8 @@ const {siteInfo} =useGlobal()
               <SmartLink
                 href={`/category/${post.category}`}
                 passHref
-                className='cursor-pointer dark:text-gray-300 font-light text-sm hover:underline hover:text-indigo-700 dark:hover:text-indigo-400 transform'>
+                className='cursor-pointer dark:text-gray-300 font-light text-sm hover:underline hover:text-indigo-700 dark:hover:text-indigo-400 transform'
+              >
                 <i className='mr-1 far fa-folder' />
                 {post.category}
               </SmartLink>

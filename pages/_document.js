@@ -69,13 +69,6 @@ class MyDocument extends Document {
                     type='font/woff2'
                     crossOrigin='anonymous'
                   />
-                  <link
-                    rel='preload'
-                    href='/vendor/fontawesome/webfonts/fa-brands-400.woff2'
-                    as='font'
-                    type='font/woff2'
-                    crossOrigin='anonymous'
-                  />
                 </>
               )}
               <style

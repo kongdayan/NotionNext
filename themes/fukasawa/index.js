@@ -74,7 +74,7 @@ const LayoutBase = props => {
               className={`${fullWidth ? '' : '2xl:max-w-6xl md:max-w-4xl'} w-full relative z-10`}>
               <Transition
                 show={!onLoading}
-                appear={true}
+                appear={false}
                 className='w-full'
                 enter='transition ease-in-out duration-700 transform order-first'
                 enterFrom='opacity-0 translate-y-16'

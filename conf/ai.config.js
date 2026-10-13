@@ -27,6 +27,8 @@ module.exports = {
 
   // Chatbase 机器人 @see https://www.chatbase.co/
   CHATBASE_ID: process.env.NEXT_PUBLIC_CHATBASE_ID || null,
+  // Re-enable after replacing the unavailable chatbot in Chatbase.
+  CHATBASE_ENABLED: process.env.NEXT_PUBLIC_CHATBASE_ENABLED || false,
 
   // OpenAI compatible AI chat proxy. Keep API keys on the server only.
   AI_CHAT_API: process.env.NEXT_PUBLIC_AI_CHAT_API || '',

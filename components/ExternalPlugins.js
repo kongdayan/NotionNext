@@ -12,6 +12,7 @@ import ExternalScript from './ExternalScript'
 import WebWhiz from './Webwhiz'
 import { useGlobal } from '@/lib/global'
 import IconFont from './IconFont'
+import Chatbase from './ChatbaseWidget'
 import { getPageCanCopy } from '@/lib/utils/copyPermission'
 
 /**
@@ -73,6 +74,7 @@ const ExternalPlugin = props => {
     NOTION_CONFIG
   )
   const CHATBASE_ID = siteConfig('CHATBASE_ID', null, NOTION_CONFIG)
+  const CHATBASE_ENABLED = siteConfig('CHATBASE_ENABLED', false, NOTION_CONFIG)
   const COMMENT_DAO_VOICE_ID = siteConfig(
     'COMMENT_DAO_VOICE_ID',
     null,
@@ -298,23 +300,9 @@ const ExternalPlugin = props => {
         </>
       )}
 
-      {CHATBASE_ID && (
+      {pluginsIdle && CHATBASE_ENABLED && CHATBASE_ID && (
         <>
-          <script
-            id={CHATBASE_ID}
-            src='https://www.chatbase.co/embed.min.js'
-            defer
-          />
-          <script
-            async
-            dangerouslySetInnerHTML={{
-              __html: `
-                    window.chatbaseConfig = {
-                        chatbotId: "${CHATBASE_ID}",
-                        }
-                    `
-            }}
-          />
+          <Chatbase chatbotId={CHATBASE_ID} />
         </>
       )}
 
@@ -466,7 +454,12 @@ const ExternalPlugin = props => {
 
       {/* UMAMI 统计 */}
       {UMAMI_ID && (
-        <script async defer src={UMAMI_HOST} data-website-id={UMAMI_ID}></script>
+        <script
+          async
+          defer
+          src={UMAMI_HOST}
+          data-website-id={UMAMI_ID}
+        ></script>
       )}
 
       {/* 谷歌统计 */}

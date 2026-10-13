@@ -2,8 +2,7 @@ import { AdSlot } from '@/components/GoogleAdsense'
 import { siteConfig } from '@/lib/config'
 import { useGlobal } from '@/lib/global'
 import { debounce } from '@/lib/utils/debounce'
-import { deepClone, isBrowser } from '@/lib/utils'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import BlogCard from './BlogCard'
 import BlogPostListEmpty from './BlogListEmpty'
 import PaginationSimple from './PaginationSimple'
@@ -18,15 +17,14 @@ import PaginationSimple from './PaginationSimple'
 const BlogListPage = ({ page = 1, posts = [], postCount, siteInfo }) => {
   const { NOTION_CONFIG } = useGlobal()
   const postsPerPage = siteConfig('POSTS_PER_PAGE', null, NOTION_CONFIG)
-  const totalPage = Math.ceil(
-    postCount / postsPerPage
-  )
+  const totalPage = Math.ceil(postCount / postsPerPage)
   const showNext = page < totalPage
 
-  const [columns, setColumns] = useState(calculateColumns())
-  const [filterPosts, setFilterPosts] = useState([])
+  // Keep the first client render identical to SSR; adapt after hydration.
+  const [columns, setColumns] = useState(3)
 
   useEffect(() => {
+    setColumns(calculateColumns())
     const handleResize = debounce(() => {
       setColumns(calculateColumns())
     }, 200)
@@ -34,27 +32,27 @@ const BlogListPage = ({ page = 1, posts = [], postCount, siteInfo }) => {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-   /**
-    * 文章重新布局，使纵向排列看起来是横向排列
-    */
-  useEffect(() => {
-    const count = posts?.length || 0;
-    const rows = Math.ceil(count / columns);
-    const newFilterPosts = new Array(count);
+  /**
+   * 文章重新布局，使纵向排列看起来是横向排列
+   */
+  const filterPosts = useMemo(() => {
+    const count = posts?.length || 0
+    const rows = Math.ceil(count / columns)
+    const newFilterPosts = new Array(count)
 
-    let index = 0;
+    let index = 0
     for (let col = 0; col < columns; col++) {
-        for (let row = 0; row < rows; row++) {
-        const sourceIndex = row * columns + col;
+      for (let row = 0; row < rows; row++) {
+        const sourceIndex = row * columns + col
         if (sourceIndex < count) {
-            newFilterPosts[index] = deepClone(posts[sourceIndex]);
-            index++;
+          newFilterPosts[index] = posts[sourceIndex]
+          index++
         }
-        }
+      }
     }
-  
-    setFilterPosts(newFilterPosts);
-  }, [columns, posts]);
+
+    return newFilterPosts
+  }, [columns, posts])
 
   if (!filterPosts || filterPosts.length === 0) {
     return <BlogPostListEmpty />
@@ -67,9 +65,11 @@ const BlogListPage = ({ page = 1, posts = [], postCount, siteInfo }) => {
             <div
               key={post.id}
               className='grid-item justify-center flex'
-              style={{ breakInside: 'avoid' }}>
+              style={{ breakInside: 'avoid' }}
+            >
               <BlogCard
                 index={index}
+                priority={index === 0}
                 key={post.id}
                 post={post}
                 siteInfo={siteInfo}
@@ -93,7 +93,7 @@ const BlogListPage = ({ page = 1, posts = [], postCount, siteInfo }) => {
  * @returns
  */
 const calculateColumns = () => {
-  if (!isBrowser) {
+  if (typeof window === 'undefined') {
     return 3
   } else {
     if (window.innerWidth >= 1024) {

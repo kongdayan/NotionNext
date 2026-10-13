@@ -219,6 +219,24 @@ const adjustImgSize = (src, maxWidth, useScreenWidth = true) => {
   if (!src) {
     return null
   }
+  // Unsplash already permits cross-origin images. Avoid a second CDN hop for
+  // covers wrapped by Notion, and keep their size parameters adjustable.
+  try {
+    const proxy = new URL(src)
+    if (
+      ['www.notion.so', 'notion.so'].includes(proxy.hostname) &&
+      proxy.pathname.startsWith('/image/')
+    ) {
+      const image = new URL(decodeURIComponent(proxy.pathname.slice(7)))
+      if (image.hostname === 'images.unsplash.com') {
+        const cacheKey = proxy.searchParams.get('t')
+        if (cacheKey) image.searchParams.set('t', cacheKey)
+        src = image.toString()
+      }
+    }
+  } catch {
+    // Relative paths and other image providers keep their original URL.
+  }
   const screenWidth =
     (useScreenWidth &&
       typeof window !== 'undefined' &&

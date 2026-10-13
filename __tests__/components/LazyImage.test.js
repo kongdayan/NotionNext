@@ -78,6 +78,18 @@ describe('LazyImage Component', () => {
     )
   })
 
+  it('loads Unsplash covers directly while preserving a stable priority width', () => {
+    const source = 'https://images.unsplash.com/photo?width=1080'
+    const proxy = `https://www.notion.so/image/${encodeURIComponent(source)}?table=block&id=post&t=post`
+    render(
+      <LazyImage src={proxy} alt='Cover' priority width={720} height={480} />
+    )
+    expect(screen.getByAltText('Cover')).toHaveAttribute(
+      'src',
+      'https://images.unsplash.com/photo?width=720&t=post'
+    )
+  })
+
   it('handles click events', () => {
     const handleClick = jest.fn()
     render(<LazyImage {...defaultProps} onClick={handleClick} />)

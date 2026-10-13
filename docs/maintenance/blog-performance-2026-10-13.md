@@ -92,7 +92,7 @@ DNSPod 管理 `kongwenyan.cn` 的 DNS。Vercel 配置检查显示 `misconfigured
 
 Analytics 源码的 [CI 38355909713](https://github.com/kongdayan/NotionNext/actions/runs/38355909713) 和 [CodeQL 38355909704](https://github.com/kongdayan/NotionNext/actions/runs/38355909704) 均成功，CI 包括测试、lint、类型、锁文件一致性和 VitePress 构建。
 
-Docker 镜像发布原来每次 push 都并行构建 amd64/arm64，连续维护提交产生了多个重叠任务。本次为实际构建任务添加并发取消规则，明确带 `[skip-version]` 的维护文档提交跳过镜像发布；并发规则放在任务内，避免跳过的文档任务取消正在运行的应用镜像构建。已取消本次维护中被新代码取代的镜像任务，旧成功镜像未删除。镜像流水线与 Vercel 部署分开，最新运行结果见 [Docker 38355909701](https://github.com/kongdayan/NotionNext/actions/runs/38355909701)。
+Docker 镜像发布原来在 push 时自动构建 amd64/arm64，更新代码曾触发该流程并发布到 `ghcr.io/kongdayan/notionnext:main`。Vercel 博客部署不依赖这份容器镜像。用户随后明确要求删除无用镜像，本次已删除 GHCR 的整个 `notionnext` 容器包（含历史版本），GitHub Packages 页面已为空；同时在 GitHub 停用工作流，并从仓库删除 `.github/workflows/docker-ghcr.yaml`，避免后续更新再次构建或推送镜像。网站、Analytics 和 Speed Insights 继续使用此前已验证的 Vercel 生产部署。
 
 ## 后续维护
 

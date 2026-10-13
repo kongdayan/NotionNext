@@ -52,7 +52,22 @@ jobs:
       - name: Set Pages project name
         run: echo "CF_PAGES_PROJECT=${{ vars.CLOUDFLARE_PAGES_PROJECT_NAME || 'notionnext-docs' }}" >> "$GITHUB_ENV"
 
+      - name: Check Cloudflare deployment configuration
+        id: cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -n "$CLOUDFLARE_API_TOKEN" ] && [ -n "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::VitePress build passed. Cloudflare docs deployment is skipped because its credentials are not configured."
+            echo "Documentation built successfully. To publish it to Cloudflare Pages, configure CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID as repository secrets." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Deploy to Cloudflare Pages
+        if: steps.cloudflare.outputs.configured == 'true'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

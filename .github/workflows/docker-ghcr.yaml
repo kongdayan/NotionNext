@@ -13,10 +13,6 @@ on:
   pull_request:
     branches: [main]
 
-concurrency:
-  group: docker-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
@@ -26,6 +22,10 @@ env:
 jobs:
   build:
     if: github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip-version]')
+    # Skipped docs jobs must not cancel an active application image build.
+    concurrency:
+      group: docker-${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
